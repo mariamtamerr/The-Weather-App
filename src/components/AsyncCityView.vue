@@ -1,8 +1,41 @@
 <script setup>
 import axios from "axios";
+import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute(); // from current route /weather/:state/:city
+const router = useRouter();
+const savedCities = ref([]);
+
+
+// ------- make remove city only appear if it's saved  ------
+
+
+// Load saved cities from local storage on component mount
+onMounted(() => {
+  if (localStorage.getItem("savedCities")) {
+    savedCities.value = JSON.parse(localStorage.getItem("savedCities"));
+  }
+});
+
+// Check if the current city is saved
+const isCitySaved = computed(() => {
+  return savedCities.value.some(
+    (city) =>
+      city.state === route.params.state &&
+      city.city === route.params.city
+  );
+});
+
+
+
+
+
+
+// ---------------------
+
+
+
 const getWeatherData = async () => {
   try {
     const weatherData = await axios.get(
@@ -34,7 +67,7 @@ const weatherData = await getWeatherData();
 
 // remove city using unique id ////////////////
   // easiest way is to add id of city to router query string
-  const router = useRouter();
+  // const router = useRouter();
 
   const removeCity = () => {
     const cities = JSON.parse(localStorage.getItem("savedCities"));
@@ -162,6 +195,7 @@ const weatherData = await getWeatherData();
 
     <!-- removing a city -->
     <div
+      v-if="isCitySaved"
       @click="removeCity"
       class="flex justify-center text-lg items-center -mt-10 gap-2 cursor-pointer text-white hover:text-red-500 duration-150"
     >

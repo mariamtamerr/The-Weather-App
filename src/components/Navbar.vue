@@ -24,21 +24,24 @@ const router = useRouter();
 const savedCities = ref([]);
 
 const addCity = () => {
+  console.log("Adding city...");
   // if there are saved cities in local storage then show them (json.parse them to be read 3shan homa byb2o objects t2rebn msh string)
   if (localStorage.getItem("savedCities")) {
     savedCities.value = JSON.parse(localStorage.getItem("savedCities"));
-    console.log(savedCities.value);
+    console.log("Loaded saved cities:", savedCities.value);
+  }
 
     // create the item obj asln 3shan n3rf n3mlha add
     const cityObject = {
-      id: uid(),
-      state: route.params.state,
-      city: route.params.city,
-      coords: {
-        lat: route.query.lat,
-        lng: route.query.lng,
-      },
-    };
+    id: uid(),
+    state: route.params.state,
+    city: route.params.city,
+    coords: {
+      lat: route.query.lat,
+      lng: route.query.lng,
+    },
+  };
+
 
     // push the city to the array of saved cities
     savedCities.value.push(cityObject);
@@ -46,16 +49,17 @@ const addCity = () => {
     // refresh local storage to make sure new city is added there
     // set item takes ('key', value)
     localStorage.setItem("savedCities", JSON.stringify(savedCities.value));
-  }
+    console.log("Saved cities to local storage:", savedCities.value);
 
-  // if city is added, then delete preview=true from route query
-  // Creating a Shallow Copy: Object.assign({}, route.query)
-  // creates a new object and copies all enumerable properties from route.query to this new object.
-  // The syntax is : Object.assign(target, ...sources)
-  let query = Object.assign({}, route.query); // here the target is a new empty object
-  delete query.preview;
-  // query.id = cityObject.id;
-  router.replace({ query });
+    // if city is added, then delete preview=true from route query
+    // Creating a Shallow Copy: Object.assign({}, route.query)
+    // creates a new object and copies all enumerable properties from route.query to this new object.
+    // The syntax is : Object.assign(target, ...sources)
+
+    let query = Object.assign({}, route.query); // here the target is a new empty object
+    delete query.preview;
+    query.id = cityObject.id;
+    router.replace({ query });
 };
 </script>
 
